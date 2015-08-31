@@ -1,0 +1,66 @@
+<div layout-gt-md="row">
+	<md-card layout-padding>
+		<form layout="column" ng-init="score = {}" ng-submit="$scores.$add(score)">
+			<md-input-container>
+				<label>Game</label>
+				<md-select ng-model="score.game" placeholder="Game" required>
+					<md-option ng-value="game.$id" ng-repeat="game in $games" ng-bind="game.name"></md-option>
+				</md-select>
+			</md-input-container>
+			<div layout="row">
+				<div>
+					<md-input-container>
+						<label>Home Team</label>
+						<md-select ng-model="score.homeTeam" placeholder="Home Team" required>
+							<md-option ng-value="team.$id" ng-repeat="team in $teams" ng-bind="team.name"></md-option>
+						</md-select>
+					</md-input-container>
+					<md-input-container>
+						<label>Home Score</label>
+						<input type="number" ng-model="score.home" required />
+					</md-input-container>
+				</div>
+				<div>
+					<md-input-container>
+						<label>Away Team</label>
+						<md-select ng-model="score.awayTeam" placeholder="Away Team" required>
+							<md-option ng-value="team.$id" ng-repeat="team in $teams | filter:{$id: '!'+score.homeTeam}" ng-bind="team.name"></md-option>
+						</md-select>
+					</md-input-container>
+					<md-input-container>
+						<label>Away Score</label>
+						<input type="number" ng-model="score.away" required />
+					</md-input-container>
+				</div>
+			</div>
+			
+			<footer>
+				<md-button type="submit" class="md-icon-button"><md-icon>add</md-icon></md-button>
+			</footer>
+		</form>
+	</md-card>
+	<md-card layout-padding>
+		<div layout="column">
+			<article ng-repeat="team in $teams" layout="row">
+				<div flex ng-include="'views/template/team.html'"></div>
+				<md-button ng-click="$teams.$save(team)" class="md-icon-button"><md-icon>save</md-icon></md-button>
+			</article>
+			<article ng-init="team = {}" layout="row">
+				<div flex ng-include="'views/template/team.html'"></div>
+				<md-button ng-click="$teams.$add(team); team = {};" class="md-icon-button"><md-icon>add</md-icon></md-button>
+			</article>
+		</div>
+	</md-card>
+	<md-card layout-padding>
+		<div layout="column">
+			<article ng-repeat="game in $games" layout="row">
+				<div layout="row" flex ng-include="'views/template/game.html'"></div>
+				<md-button ng-click="$games.$save(game)" class="md-icon-button"><md-icon>save</md-icon></md-button>
+			</article>
+			<article ng-init="game = {}" layout="row">
+				<div layout="row" flex ng-include="'views/template/game.html'"></div>
+				<md-button ng-click="$games.$add(game); game = {};" class="md-icon-button"><md-icon>add</md-icon></md-button>
+			</article>
+		</div>
+	</md-card>
+</div>

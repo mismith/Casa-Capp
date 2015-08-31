@@ -22,40 +22,7 @@
 <body ng-controller="AppCtrl" layout="column" ng-class="{loaded: loaded}">
 
 	<div id="app" layout="column" layout-fill>
-		<md-toolbar id="header" layout="row" layout-align="center center">
-			<div flex class="md-toolbar-tools">
-				<div flex>
-					<a ui-sref="home" class="home">Casa Capp</a>
-				</div>
-				<div layout="row">
-					<div ng-repeat="myRoster in myRosters" ng-init="myRosterEvents = $firebaseHelper.array('data/rosters/' + myRoster.$id + '/events')" layout="row">
-						<a ng-repeat="myRosterEvent in myRosterEvents | filterByTimegroup:'today'" ui-sref="event({roster: myRoster.$id, event: myRosterEvent.$id})" title="{{ myRosterEvent.name }}" style="display: block;">
-							<avatar roster="myRoster" size="32"></avatar>
-						</a>
-					</div>
-				</div>
-				<nav>
-					<md-button ng-if=" ! $me.$id" ng-click="$auth()" class="md-facebook md-raised" aria-label="Login with Facebook" style="margin: 0;">
-						<md-icon md-font-set="fa" class="fa-facebook"></md-icon>
-						Login
-					</md-button>
-					<md-menu ng-if="$me.$id">
-						<md-button ng-click="$mdOpenMenu()" layout="row" layout-align="center center" layout-fill aria-label="Open user menu" class="md-icon-button" style="margin-left: 8px;">
-							<img ng-src="{{ avatar($me.facebook.id) }}" width="48" height="48" class="md-avatar" />
-						</md-button>
-						<md-menu-content width="4">
-							<md-menu-item>
-								<md-button ng-click="$state.go('user', {user: $me.$id})" aria-label="My Account">My Profile</md-button>
-							</md-menu-item>
-							<md-menu-item>
-								<md-button ng-click="$unauth()" class="md-warn" aria-label="Logout">Logout</md-button>
-							</md-menu-item>
-						</md-menu-content>
-					</md-menu>
-				</nav>
-			</div>
-		</md-toolbar>
-		<md-content role="main" layout="column" flex ui-view autoscroll="false" id="main"></md-content>
+		<main layout="column" flex ui-view autoscroll="false" id="main"></main>
 	</div>
 
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.1/angular.min.js"></script>

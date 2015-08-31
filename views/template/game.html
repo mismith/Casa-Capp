@@ -1,4 +1,8 @@
-<md-input-container>
+<md-input-container flex>
 	<label>Game Name</label>
-	<input ng-model="game.name" />
+	<input ng-model="game.name" required />
+</md-input-container>
+<md-input-container>
+	<label>Points to Win</label>
+	<input type="number" ng-model="game.win" required />
 </md-input-container>

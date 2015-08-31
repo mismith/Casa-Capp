@@ -10,6 +10,11 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 				url: '/',
 				templateUrl: 'views/page/home.html',
 				controller: 'HomeCtrl',
+			})
+			.state('admin', {
+				url: '/admin',
+				templateUrl: 'views/page/admin.html',
+				controller: 'AdminCtrl',
 			});
 		
 		// data
@@ -115,6 +120,11 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 			
 			return $scope.$teams.$getRecord(score.homeTeam === team.$id ? score.awayTeam : score.homeTeam);
 		};
+	}])
+	.controller('AdminCtrl', ["$scope", "$state", "$firebaseHelper", function ($scope, $state, $firebaseHelper) {
+		$scope.$teams  = $firebaseHelper.array('teams');
+		$scope.$games  = $firebaseHelper.array('games');
+		$scope.$scores = $firebaseHelper.array('scores');
 	}])
 	
 	

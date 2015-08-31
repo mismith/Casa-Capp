@@ -10,9 +10,57 @@
 @success:  rgb(0,128,0);
 @bg:       #DDD;
 @lightest: #FFF;
+@lighter:  #E2E2E2;
 @neutral:  #AAA;
 @darker:   #333;
 @darkest:  #000;
 
 @facebook: #3b5998;
 
+* {
+	box-sizing: border-box;
+}
+body {
+	background-color: @lighter;
+}
+#main {
+	overflow-y: auto;
+}
+
+table {
+	border: solid 1px @darker;
+	border-width: 1px 0 0 1px;
+	border-spacing: 0;
+	
+	th,
+	td {
+		padding: 1px 5px;
+		border: solid 1px @darker;
+		border-width: 0 1px 1px 0;
+	}
+	th {
+		background-color: @neutral;
+	}
+}
+.playoffs {
+	td:last-child {
+		big {
+			display: inline-block;
+			min-width: 27px;
+			border: dotted 1px @accent;
+			border-radius: 50%;
+		}
+	}
+}
+.score {
+	&.win {
+		font-weight: bold;
+	}
+	&.loss {
+		opacity: .67;
+	}
+}
+
+.align-center {
+	text-align: center;
+}
