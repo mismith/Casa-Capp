@@ -1,0 +1,74 @@
+<section>
+	<table layout-fill border="1">
+		<tr>
+			<th>Rank</th>
+			<th>Team</th>
+			<th ng-repeat="game in $games" ng-bind="game.name"></th>
+			<th>Score</th>
+		</tr>
+		<tr ng-repeat="team in $teams | orderBy:'-$score'">
+			<td ng-bind="$index + 1"></td>
+			<td ng-bind="team.name"></td>
+			<td ng-repeat="game in $games">
+				<div ng-repeat="score in getScores(team, game)" layout="column" layout-align="center center">
+					<big ng-bind="getPoints(team, game, score) | number:0"></big>
+					<small ng-bind="getSpread(team, game, score) + ' vs. ' + getOpponent(team, score).name"></small>
+				</div>
+			</td>
+			<td ng-bind="(team.$score = getPoints(team)) | number:0"></td>
+		</tr>
+	</table>
+</section>
+<form ng-init="score = {}" ng-submit="$scores.$add(score)">
+	<md-input-container>
+		<md-select ng-model="score.homeTeam" placeholder="Home Team">
+			<md-option ng-value="team.$id" ng-repeat="team in $teams" ng-bind="team.name"></md-option>
+		</md-select>
+	</md-input-container>
+	<md-input-container ng-if="score.homeTeam">
+		<md-select ng-model="score.awayTeam" placeholder="Away Team">
+			<md-option ng-value="team.$id" ng-repeat="team in $teams | filter:{$id: '!'+score.homeTeam}" ng-bind="team.name"></md-option>
+		</md-select>
+	</md-input-container>
+	<md-input-container ng-if="score.awayTeam">
+		<md-select ng-model="score.game" placeholder="Game">
+			<md-option ng-value="game.$id" ng-repeat="game in $games" ng-bind="game.name"></md-option>
+		</md-select>
+	</md-input-container>
+	<div ng-if="score.game" layout="row">
+		<header>Score</header>
+		<md-input-container>
+			<label>Home</label>
+			<input type="number" ng-model="score.home" />
+		</md-input-container>
+		<md-input-container>
+			<label>Away</label>
+			<input type="number" ng-model="score.away" />
+		</md-input-container>
+	</div>
+	<footer>
+		<md-button type="submit">Add</md-button>
+	</footer>
+</form>
+<div layout="row">
+	<ul layout="column">
+		<li ng-repeat="team in $teams" layout="row">
+			<div flex ng-include="'views/template/team.html'"></div>
+			<md-button ng-click="$teams.$save(team)">Save</md-button>
+		</li>
+		<li ng-init="team = {}" layout="row">
+			<div flex ng-include="'views/template/team.html'"></div>
+			<md-button ng-click="$teams.$add(team); team = {};">Add</md-button>
+		</li>
+	</ul>
+	<ul layout="column">
+		<li ng-repeat="game in $games" layout="row">
+			<div flex ng-include="'views/template/game.html'"></div>
+			<md-button ng-click="$games.$save(game)">Save</md-button>
+		</li>
+		<li ng-init="game = {}" layout="row">
+			<div flex ng-include="'views/template/game.html'"></div>
+			<md-button ng-click="$games.$add(game); game = {};">Add</md-button>
+		</li>
+	</ul>
+</div>
