@@ -1,27 +1,60 @@
-<section>
-	<table layout-fill>
+<section flex layout="column">
+	<table flex layout-fill>
 		<thead>
 			<tr>
 				<th>#</th>
 				<th>Team</th>
 				<th ng-repeat="game in $games" ng-bind="game.name"></th>
-				<th>Points</th>
+				<th ng-click="decPlaces = decPlaces ? 0 : 9">Points</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr ng-repeat="team in $teams | orderBy:'-$score'" ng-class="{playoffs: $index < 4}">
 				<td ng-bind="$index + 1" class="align-center"></td>
-				<td ng-bind="team.name"></td>
-				<td ng-repeat="game in $games">
-					<div ng-repeat="score in getScores(team, game)" layout="column" layout-align="center center" class="score" ng-class="{win: points > 0, loss: points <= 0}">
+				<td>
+					<md-button ng-click="permission() ? editTeam() : null" ng-bind="team.name"></md-button>
+				</td>
+				<td ng-repeat="game in $games" class="score align-center">
+					<md-button ng-repeat="score in getScores(team, game)" ng-click="permission() ? editScore(score) : null" layout="column" layout-align="center center" ng-class="{win: points > 0, loss: points <= 0}">
 						<big ng-bind="(points = getPoints(team, game, score)) | number:0"></big>
 						<small ng-bind="getSpread(team, game, score) + ' vs. ' + getOpponent(team, score).name"></small>
-					</div>
+					</md-button>
+					<md-button ng-if="permission() && ! (getScores(team, game) | length)" ng-click="editScore({homeTeam: team.$id, game: game.$id})" class="add">
+						<md-icon>add</md-icon>
+					</md-button>
 				</td>
 				<td class="align-center">
-					<big ng-bind="(team.$score = getPoints(team)) | number:0"></big>
+					<big ng-bind="(team.$score = getPoints(team)) | number:decPlaces || 0"></big>
 				</td>
 			</tr>
 		</tbody>
+		<tfoot ng-if="permission()">
+			<tr>
+				<td>&nbsp;</td>
+				<td layout="row">
+					<input ng-model="team.name" placeholder="New Team Name" required flex />
+					<md-button ng-click="$teams.$add(team); team = {};" ng-disabled=" ! team.name" class="md-icon-button"><md-icon>add</md-icon></md-button>
+				</td>
+				<td ng-repeat="game in $games">&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody>
 	</table>
+	
+	<md-card>
+		<ul>
+			<li ng-repeat="score in $scores">
+				<strong ng-bind="$teams.$getRecord(score.home > score.away ? score.homeTeam : score.awayTeam).name"></strong>
+				<small>def.</small>
+				<span ng-bind="$teams.$getRecord(score.home < score.away ? score.homeTeam : score.awayTeam).name"></span>
+				<small>at</small> <span ng-bind="$games.$getRecord(score.game).name"></span>:
+				<span ng-bind="score.home > score.away ? score.home : score.away"></span>-<span ng-bind="score.home < score.away ? score.home : score.away"></span>
+			</li>
+		</ul>
+	</md-card>
+	
+	<footer>
+		<md-button ng-if=" ! permission()" ng-click="$auth()">Login</md-button>
+		<md-button ng-if="permission()" ng-click="$unauth()">Logout</md-button>
+	</footer>
 </section>

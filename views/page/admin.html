@@ -1,39 +1,7 @@
 <div layout-gt-md="row">
 	<md-card layout-padding>
-		<form name="scoreForm" layout="column" ng-init="score = {}" ng-submit="$scores.$add(score)">
-			<md-input-container>
-				<label>Game</label>
-				<md-select ng-model="score.game" placeholder="Game" required tabindex="1">
-					<md-option ng-value="game.$id" ng-repeat="game in $games" ng-bind="game.name"></md-option>
-				</md-select>
-			</md-input-container>
-			<div layout="row">
-				<div>
-					<md-input-container>
-						<label>Home Team</label>
-						<md-select name="homeTeam" ng-model="score.homeTeam" placeholder="Home Team" required tabindex="2">
-							<md-option ng-value="team.$id" ng-repeat="team in $teams" ng-bind="team.name"></md-option>
-						</md-select>
-					</md-input-container>
-					<md-input-container>
-						<label>Home Score</label>
-						<input type="number" ng-model="score.home" required tabindex="4" />
-					</md-input-container>
-				</div>
-				<div ng-if="score.homeTeam">
-					<md-input-container>
-						<label>Away Team</label>
-						<md-select ng-model="score.awayTeam" placeholder="Away Team" required tabindex="3">
-							<md-option ng-value="team.$id" ng-repeat="team in $teams | filter:{$id: '!'+score.homeTeam}" ng-bind="team.name"></md-option>
-						</md-select>
-					</md-input-container>
-					<md-input-container>
-						<label>Away Score</label>
-						<input type="number" ng-model="score.away" required tabindex="5" />
-					</md-input-container>
-				</div>
-			</div>
-			
+		<form ng-submit="$scores.$add(score)">
+			<ng-include src="'views/template/score.html'"></ng-include>
 			<footer>
 				<md-button type="submit" class="md-icon-button"><md-icon>add</md-icon></md-button>
 			</footer>

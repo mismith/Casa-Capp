@@ -28,13 +28,13 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 		Auth.$onAuth(function (authData) {
 			if (authData) {
 				// logging in
-				var meRef      = $firebaseHelper.ref('data/users/' + authData.uid);
+				var meRef      = $firebaseHelper.ref('users/' + authData.uid);
 				$rootScope.$me = $firebaseHelper.object(meRef);
 				
 				// presence
 				$firebaseHelper.ref('.info/connected').on('value', function (snap) {
 					if (snap.val()) {
-						meRef.child('online').onDisconnect().set(moment().format());
+						meRef.child('online').onDisconnect().set((new Date).toISOString());
 						meRef.child('online').set(true);
 					}
 				});
@@ -48,6 +48,9 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 				}
 			} else {
 				// page loaded or refreshed while not logged in, or logging out
+				if ($rootScope.$me && $rootScope.$me.$id) {
+					$rootScope.$me.$ref().child('online').set((new Date).toISOString());
+				}
 				$rootScope.$me = {};
 			}
 		});
@@ -74,11 +77,18 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 		$rootScope.loaded          = true;
 		$rootScope.$state          = $state;
 		$rootScope.$firebaseHelper = $firebaseHelper;
+		
+		$rootScope.permission = function () {
+			return !! $rootScope.$me.$id;
+		};
 	})
-	.controller('HomeCtrl', function ($scope, $state, $firebaseHelper) {
+	.controller('HomeCtrl', function ($scope, $state, $firebaseHelper, $mdDialogForm, $q) {
 		$scope.$teams  = $firebaseHelper.array('teams');
 		$scope.$games  = $firebaseHelper.array('games');
 		$scope.$scores = $firebaseHelper.array('scores');
+		$scope.alert   = function (text) {
+			alert(text);
+		};
 		
 		$scope.getScores = function (team, game) {
 			if ( ! team) return [];
@@ -120,11 +130,63 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 			
 			return $scope.$teams.$getRecord(score.homeTeam === team.$id ? score.awayTeam : score.homeTeam);
 		};
+		
+		$scope.editScore = function (score) {
+			var scope = $scope.$new();
+			scope.score = score.$id ? $firebaseHelper.object($scope.$scores, score.$id) : angular.copy(score);
+			
+			$mdDialogForm.show({
+				scope:      scope,
+				contentUrl: 'views/template/score.html',
+				onSubmit:   function (scope) {
+					if (scope.score.$save) {
+						return scope.score.$save();
+					} else {
+						return $scope.$scores.$add(scope.score);
+					}
+				},
+			});
+		};
 	})
 	.controller('AdminCtrl', function ($scope, $state, $firebaseHelper) {
 		$scope.$teams  = $firebaseHelper.array('teams');
 		$scope.$games  = $firebaseHelper.array('games');
 		$scope.$scores = $firebaseHelper.array('scores');
+	})
+	
+	.factory('$mdDialogForm', function ($mdDialog, $q) {
+		return {
+			show: function (options) {
+				return $mdDialog.show($mdDialog.confirm(angular.extend({
+					ok:            'Submit',
+					cancel:        'Cancel',
+					template:      [
+						'<md-dialog ng-form="dialogForm" md-theme="{{ dialog.theme }}" aria-label="{{ dialog.ariaLabel }}">',
+							'<md-dialog-content role="document" tabIndex="-1">',
+								'<h2 class="md-title">{{ dialog.title }}</h2>',
+								'<p ng-if="dialog.content">{{ dialog.content }}</p>',
+								'<div ng-if="dialog.contentUrl" ng-include="dialog.contentUrl"></div>',
+							'</md-dialog-content>',
+							'<div class="md-actions">',
+								'<md-button ng-if="dialog.$type == \'confirm\'" ng-click="dialog.abort()">',
+									'{{ dialog.cancel }}',
+								'</md-button>',
+								'<md-button ng-disabled="dialogForm.$invalid || dialog.loading" ng-click="dialog.startLoading(); dialog.onSubmit(this).then(dialog.hide).finally(dialog.stopLoading)" class="md-primary">',
+									'{{ dialog.ok }}',
+								'</md-button>',
+							'</div>',
+						'</md-dialog>'
+					].join(''),
+					onSubmit:      function onSubmit (scope) {
+						var deferred = $q.defer();
+						
+						deferred.resolve();
+						
+						return deferred.promise;
+					},
+				}, options || {})));
+			},
+		};
 	})
 	
 	
