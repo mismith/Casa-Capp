@@ -8,7 +8,7 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 			// pages
 			.state('home', {
 				url: '/',
-				templateUrl: 'views/page/home.html',
+				templateUrl: 'views/page/home.html?rev=1',
 				controller: 'HomeCtrl',
 			})
 			.state('admin', {
