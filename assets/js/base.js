@@ -66,6 +66,12 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 			return deferred.promise;
 		};
 		
+		// hacky browser detection
+		$rootScope.isMobile  = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+		$rootScope.isAndroid = /Android/i.test(navigator.userAgent);
+		$rootScope.isiOS     = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+		
+		// methods
 		$rootScope.$auth = Auth.$auth = function () {
 			return $q.when(Auth.$getAuth() || Auth['$authWithOAuth' + ($rootScope.isMobile ? 'Redirect' : 'Popup')]('facebook', {scope: 'email'}));
 		};
