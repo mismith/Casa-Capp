@@ -12,14 +12,14 @@
 			<tr ng-repeat="team in $teams | orderBy:'-$score'" ng-class="{playoffs: $index < 4}">
 				<td ng-bind="$index + 1" class="align-center"></td>
 				<td>
-					<md-button ng-click="permission() ? editTeam() : null" ng-bind="team.name"></md-button>
+					<md-button ng-click="permission() ? editTeam(team) : null" ng-bind="team.name" aria-label="Edit Team"></md-button>
 				</td>
 				<td ng-repeat="game in $games" class="score align-center">
-					<md-button ng-repeat="score in getScores(team, game)" ng-click="permission() ? editScore(score) : null" layout="column" layout-align="center center" ng-class="{win: points > 0, loss: points <= 0}">
+					<md-button ng-repeat="score in getScores(team, game)" ng-click="permission() ? editScore(score) : null" layout="column" layout-align="center center" ng-class="{win: points > 0, loss: points <= 0}" aria-label="Edit Score">
 						<big ng-bind="(points = getPoints(team, game, score)) | number:0"></big>
 						<small ng-bind="getSpread(team, game, score) + ' vs. ' + getOpponent(team, score).name"></small>
 					</md-button>
-					<md-button ng-if="permission() && ! (getScores(team, game) | length)" ng-click="editScore({homeTeam: team.$id, game: game.$id})" class="add">
+					<md-button ng-if="permission() && ! (getScores(team, game) | length)" ng-click="editScore({homeTeam: team.$id, game: game.$id})" class="add" aria-label="Add Score">
 						<md-icon>add</md-icon>
 					</md-button>
 				</td>

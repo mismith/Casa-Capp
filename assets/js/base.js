@@ -82,7 +82,7 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 			return !! $rootScope.$me.$id;
 		};
 	}])
-	.controller('HomeCtrl', ["$scope", "$state", "$firebaseHelper", "$mdDialogForm", "$q", function ($scope, $state, $firebaseHelper, $mdDialogForm, $q) {
+	.controller('HomeCtrl', ["$scope", "$state", "$firebaseHelper", "$mdDialog", "$mdDialogForm", "$q", function ($scope, $state, $firebaseHelper, $mdDialog, $mdDialogForm, $q) {
 		$scope.$teams  = $firebaseHelper.array('teams');
 		$scope.$games  = $firebaseHelper.array('games');
 		$scope.$scores = $firebaseHelper.array('scores');
@@ -135,6 +135,19 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 			var scope = $scope.$new();
 			scope.score = score.$id ? $firebaseHelper.object($scope.$scores, score.$id) : angular.copy(score);
 			
+			scope.deleteScore = function (score, skipConfirm) {
+				var deferred = $q.defer();
+				if (skipConfirm || confirm('Are you sure you want to permanently delete this score?')) {
+					return $scope.$scores.$remove($scope.$scores.$getRecord(score.$id)).then(function () {
+						$mdDialog.hide();
+						
+						deferred.resolve();
+					});
+				} else {
+					deferred.reject();
+				}
+				return deferred.promise;
+			};
 			$mdDialogForm.show({
 				scope:      scope,
 				contentUrl: 'views/template/score.html',
@@ -143,6 +156,35 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 						return scope.score.$save();
 					} else {
 						return $scope.$scores.$add(scope.score);
+					}
+				},
+			});
+		};
+		$scope.editTeam = function (team) {
+			var scope = $scope.$new();
+			scope.team = team.$id ? $firebaseHelper.object($scope.$teams, team.$id) : angular.copy(team);
+			
+			scope.deleteTeam = function (team, skipConfirm) {
+				var deferred = $q.defer();
+				if (skipConfirm || confirm('Are you sure you want to permanently delete this team?')) {
+					return $scope.$teams.$remove($scope.$teams.$getRecord(team.$id)).then(function () {
+						$mdDialog.hide();
+						
+						deferred.resolve();
+					});
+				} else {
+					deferred.reject();
+				}
+				return deferred.promise;
+			};
+			$mdDialogForm.show({
+				scope:      scope,
+				contentUrl: 'views/template/team.html',
+				onSubmit:   function (team) {
+					if (scope.team.$save) {
+						return scope.team.$save();
+					} else {
+						return $scope.$teams.$add(scope.team);
 					}
 				},
 			});

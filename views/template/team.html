@@ -2,3 +2,6 @@
 	<label>Team Name</label>
 	<input ng-model="team.name" required />
 </md-input-container>
+<footer ng-if="team.$id">
+	<md-button ng-click="deleteTeam(team, $event.shiftKey)" class="md-warn md-raised">Delete</md-button>
+</footer>

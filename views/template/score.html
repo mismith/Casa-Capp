@@ -30,3 +30,6 @@
 		</md-input-container>
 	</div>
 </div>
+<footer ng-if="score.$id">
+	<md-button ng-click="deleteScore(score, $event.shiftKey)" class="md-warn md-raised">Delete</md-button>
+</footer>
