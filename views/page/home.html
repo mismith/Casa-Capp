@@ -41,7 +41,7 @@
 		</tbody>
 	</table>
 	
-	<md-card>
+	<md-card ng-if="$scores | length">
 		<ul>
 			<li ng-repeat="score in $scores">
 				<strong ng-bind="$teams.$getRecord(score.home > score.away ? score.homeTeam : score.awayTeam).name"></strong>
@@ -53,8 +53,10 @@
 		</ul>
 	</md-card>
 	
+<!--
 	<footer>
 		<md-button ng-if=" ! permission()" ng-click="$auth()">Login</md-button>
 		<md-button ng-if="permission()" ng-click="$unauth()">Logout</md-button>
 	</footer>
+-->
 </section>

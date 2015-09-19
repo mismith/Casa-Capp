@@ -21,71 +21,13 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 		$firebaseHelperProvider.namespace('casa-capp');
 	}])
 	
-	.factory('Auth', ["$rootScope", "$firebaseHelper", "$state", "$q", "$timeout", function ($rootScope, $firebaseHelper, $state, $q, $timeout) {
-		var Auth = $firebaseHelper.auth();
-		
-		$rootScope.$me = {};
-		Auth.$onAuth(function (authData) {
-			if (authData) {
-				// logging in
-				var meRef      = $firebaseHelper.ref('users/' + authData.uid);
-				$rootScope.$me = $firebaseHelper.object(meRef);
-				
-				// presence
-				$firebaseHelper.ref('.info/connected').on('value', function (snap) {
-					if (snap.val()) {
-						meRef.child('online').onDisconnect().set((new Date).toISOString());
-						meRef.child('online').set(true);
-					}
-				});
-				
-				// info
-				meRef.update(authData); // update it w/ any changes since last login
-				
-				// don't show login screen
-				if ($state.current.name === 'home') {
-					$state.reload();
-				}
-			} else {
-				// page loaded or refreshed while not logged in, or logging out
-				if ($rootScope.$me && $rootScope.$me.$id) {
-					$rootScope.$me.$ref().child('online').set((new Date).toISOString());
-				}
-				$rootScope.$me = {};
-			}
-		});
-		Auth.$waitForMe = function () {
-			var deferred = $q.defer();
-			
-			Auth.$waitForAuth().then(function (authData) {
-				$timeout(function () {
-					deferred.resolve($rootScope.$me);
-				});
-			});
-			
-			return deferred.promise;
-		};
-		
-		// hacky browser detection
-		$rootScope.isMobile  = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-		$rootScope.isAndroid = /Android/i.test(navigator.userAgent);
-		$rootScope.isiOS     = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-		
-		// methods
-		$rootScope.$auth = Auth.$auth = function () {
-			return $q.when(Auth.$getAuth() || Auth['$authWithOAuth' + ($rootScope.isMobile ? 'Redirect' : 'Popup')]('facebook', {scope: 'email'}));
-		};
-		$rootScope.$unauth = Auth.$unauth;
-		
-		return Auth;
-	}])
-	.controller('AppCtrl', ["$rootScope", "$state", "$firebaseHelper", "Auth", function ($rootScope, $state, $firebaseHelper, Auth) {
+	.controller('AppCtrl', ["$rootScope", "$state", "$firebaseHelper", "$location", function ($rootScope, $state, $firebaseHelper, $location) {
 		$rootScope.loaded          = true;
 		$rootScope.$state          = $state;
 		$rootScope.$firebaseHelper = $firebaseHelper;
 		
 		$rootScope.permission = function () {
-			return !! $rootScope.$me.$id;
+			return !! $location.search().permission; //!! $rootScope.$me.$id;
 		};
 	}])
 	.controller('HomeCtrl', ["$scope", "$state", "$firebaseHelper", "$mdDialog", "$mdDialogForm", "$q", function ($scope, $state, $firebaseHelper, $mdDialog, $mdDialogForm, $q) {
