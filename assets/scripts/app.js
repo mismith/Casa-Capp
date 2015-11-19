@@ -18,7 +18,8 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 			});
 		
 		// data
-		$firebaseHelperProvider.namespace('casa-capp');
+		$firebaseHelperProvider.namespace('mismith');
+		$firebaseHelperProvider.root('casa-capp');
 	})
 	
 	.controller('AppCtrl', function ($rootScope, $state, $firebaseHelper, $location) {
