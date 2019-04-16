@@ -2,7 +2,7 @@ angular.module('casa-capp', ['ui.router', 'ngMaterial', 'firebaseHelper'])
 	
 	.config(function ($locationProvider, $urlRouterProvider, $stateProvider, $firebaseHelperProvider) {
 		// routing
-		$locationProvider.html5Mode(true);
+		$locationProvider.html5Mode(false);
 		$urlRouterProvider.when('', '/');
 		$stateProvider
 			// pages
